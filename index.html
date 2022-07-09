@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Avatar Creator</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <main class="my-form">
+    <div class="cotainer">
+      <div class="row justify-content-center">
+        <div class="col-md-12">
+          <div class="center">
+            <!--Register-->
+            <div id="Form">
+              <form action="/">
+                <div class="form-group">
+                  <label for="email">Email:</label>
+                  <input type="email" class="form-control" id="email" placeholder="Enter Email" name="email">
+                </div>
+                <div class="form-group">
+                  <label for="password">Password:</label>
+                  <input type="password" class="form-control" id="password" placeholder="Enter Password"
+                    name="password">
+                </div>
+                <div class="form-group">
+                  <label for="metamask">Nick Name:</label>
+                  <input type="text" class="form-control" id="metamask" placeholder="Your Nickname" name="metamask">
+                </div>
+                <div class="form-group">
+                  <label for="fullname">Full Name:</label>
+                  <input type="text" class="form-control" id="fullname" placeholder="Full Name" name="fullname">
+                </div>
+                <input type="hidden" id="avatar" name="avatar">
+                <div id="result"></div>
+                <button id="sign-in" class="btn btn-default">Submit</button>
+                <div class="panel panel-danger" id="errors" style='display: none;'>
+                </div>
+                <div class="panel panel-primary" id="success" style='display: none;'>
+                </div>
+              </form>
+            </div>
+            <!--Register-->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script src="js/firebase.js"></script>
+    <script src="js/init.js"></script>
+    <script>
+      document.getElementById("sign-in").onclick = function (e) {
+        e.preventDefault();
+        handleSignUp();
+
+      }
+
+      function handleSignUp() {
+        var errors = document.getElementById('errors');
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var warnings = "";
+
+        if (email.length < 4) {
+          warnings += 'You need a valid email chief <br/>';
+        }
+        if (password.length < 4) {
+          warnings += 'You need a valid password boss <br/>';
+        }
+
+        if (warnings != "") {
+          console.log(warnings);
+          errors.style.display = 'block';
+          errors.innerHTML = warnings;
+        } else {
+          errors.style.display = "none";
+          firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+            errors.style.display = (errors.style.display === "none" || errors.style.display === "") ? "block" : "none";
+            console.log(error);
+            errors.innerHTML = error + "<br/>";
+          });
+        }
+      }
+
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+
+          var fireBase_name = user.displayName;
+          var fireBase_email = user.email;
+
+          var fireBase_emailVerified = user.emailVerified;
+          var fireBase_uid = user.uid;
+          var success = document.getElementById('success');
+          success.style.display = (success.style.display === "none" || success.style.display === "") ? "block" : "none";
+          success.innerHTML = "User Logged in with Credentials: <br />" +
+            "<b>Name:</b> " + fireBase_name + "<br />" +
+            "<b>Email: </b>" + fireBase_email + "<br />" +
+            "<b>uid: </b>" + fireBase_uid + "<br />";
+
+          window.location.href = "avatar.html";
+        }
+
+      });
+
+
+      firebase.auth().signOut().then(function () {
+      }, function (error) {
+      });
+    </script>
+  </main>
+</body>
+
+</html>
